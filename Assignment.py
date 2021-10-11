@@ -84,6 +84,12 @@ class CSP:
         # Call backtrack with the partial assignment 'assignment'
         return self.backtrack(assignment)
 
+    def check_complete_assigment(self, assignment):
+        for var in assignment.values():
+            if len(var) > 1:
+                return False
+        return True
+
     def backtrack(self, assignment):
         """The function 'Backtrack' from the pseudocode in the
         textbook.
@@ -109,7 +115,17 @@ class CSP:
         iterations of the loop.
         """
         # TODO: IMPLEMENT THIS
-        pass
+        # sjekker om assignment er complete
+        if self.check_complete_assigment(assignment):
+            return assignment
+
+        var = self.select_unassigned_variable(assignment)
+        for value in self.domains[var]:
+            assignment = copy.deepcopy(assignment)
+            assignment[var] = value
+            inferences = self.
+
+
 
     def select_unassigned_variable(self, assignment):
         """The function 'Select-Unassigned-Variable' from the pseudocode
@@ -118,7 +134,9 @@ class CSP:
         of legal values has a length greater than one.
         """
         # TODO: IMPLEMENT THIS
-        pass
+        for var in assignment:
+            if len(assignment[var]) > 1:
+                return var
 
     def inference(self, assignment, queue):
         """The function 'AC-3' from the pseudocode in the textbook.
@@ -127,7 +145,19 @@ class CSP:
         is the initial queue of arcs that should be visited.
         """
         # TODO: IMPLEMENT THIS
-        pass
+        while len(queue) > 0:
+            pair = queue.pop(0)
+            x_i, x_j = pair[0], pair[1]
+            if self.revise(assignment, x_i, x_j):
+                if len(self.domains[x_i]) == 0:
+                    return False
+                neigbours_to_search = self.get_all_neighboring_arcs(x_i)
+                neigbours_to_search.remove(x_j)
+                for x_k in neigbours_to_search:
+                    queue.append((x_k, x_i))
+        return True
+
+
 
     def revise(self, assignment, i, j):
         """The function 'Revise' from the pseudocode in the textbook.
@@ -139,7 +169,17 @@ class CSP:
         legal values in 'assignment'.
         """
         # TODO: IMPLEMENT THIS
-        pass
+        revised = False
+        for x in self.domains[i]:
+            for y in self.domains[j]:
+                pairs = self.get_all_possible_pairs(x, y)
+                for pair in pairs:
+                    """Sjekk om x, y satisfier konstraint mellom """
+                    if pair not in self.constraints[i][j]:
+                        del self.domains[x]
+                        revised = True
+        return revised
+
 
 
 def create_map_coloring_csp():
